@@ -60,9 +60,8 @@ exec(char *path, char **argv)
   end_op();
   ip = 0;
 
-  sz = PGROUNDUP(sz);
-	int stack_sz = 1;
-  if((sp = allocuvm(pgdir, STACKTOP-PGSIZE, PGROUNDUP(STACKTOP-PGSIZE))) == 0)
+	uint stack_top = USERTOP - PGSIZE;
+  if((sp = allocuvm(pgdir, stack_top, USERTOP)) == 0)
     goto bad;
 
   // Push argument strings, prepare rest of stack in ustack.
@@ -94,7 +93,8 @@ exec(char *path, char **argv)
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
   curproc->sz = sz;
-  curproc->stack_sz = stack_sz;  // Right now it's only one page big
+	curproc->stack_top = stack_top;
+  curproc->stack_sz = 1;  // Right now it's only one page big
 	curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   switchuvm(curproc);

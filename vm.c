@@ -339,7 +339,8 @@ copyuvm(pde_t *pgdir, uint sz)
   }
 	
 	// Copy contents of stack to the new process
-	for (i = STACKTOP - PGSIZE; i < PGROUNDDOWN(STACKTOP - PGSIZE); i += PGSIZE) {
+	uint stack_top = USERTOP - PGSIZE;
+	for (i = stack_top; i < USERTOP; i += PGSIZE) {
 		if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))

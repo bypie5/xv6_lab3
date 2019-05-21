@@ -19,7 +19,7 @@ fetchint(uint addr, int *ip)
 {
   //struct proc *curproc = myproc();
 
-  if(addr >= STACKTOP || addr+4 > STACKTOP)
+  if(addr >= USERTOP || addr+4 > USERTOP)
     return -1;
   *ip = *(int*)(addr);
   return 0;
@@ -34,10 +34,10 @@ fetchstr(uint addr, char **pp)
   char *s, *ep;
   //struct proc *curproc = myproc();
 
-  if(addr >= STACKTOP)
+  if(addr >= USERTOP)
     return -1;
   *pp = (char*)addr;
-  ep = (char*) STACKTOP;//curproc->sz;
+  ep = (char*)USERTOP;
   for(s = *pp; s < ep; s++){
     if(*s == 0)
       return s - *pp;
