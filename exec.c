@@ -61,11 +61,9 @@ exec(char *path, char **argv)
   ip = 0;
 
   sz = PGROUNDUP(sz);
-	int stack_sz = 0;
-  if((stack_sz = allocuvm(pgdir, (KERNBASE - 1) - PGSIZE, KERNBASE - 1)) == 0)
+	int stack_sz = 1;
+  if((sp = allocuvm(pgdir, STACKTOP-PGSIZE, PGROUNDUP(STACKTOP-PGSIZE))) == 0)
     goto bad;
-  // clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-  sp = stack_sz; 
 
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
@@ -96,7 +94,8 @@ exec(char *path, char **argv)
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
   curproc->sz = sz;
-  curproc->tf->eip = elf.entry;  // main
+  curproc->stack_sz = stack_sz;  // Right now it's only one page big
+	curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   switchuvm(curproc);
   freevm(oldpgdir);
