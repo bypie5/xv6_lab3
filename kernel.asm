@@ -1266,10 +1266,10 @@ exec(char *path, char **argv)
 80100b40:	e8 1b 20 00 00       	call   80102b60 <end_op>
   if((sp = allocuvm(pgdir, stack_top, USERTOP)) == 0)
 80100b45:	8b 85 f0 fe ff ff    	mov    -0x110(%ebp),%eax
-80100b4b:	c7 44 24 08 00 30 d4 	movl   $0xdd43000,0x8(%esp)
-80100b52:	0d 
-80100b53:	c7 44 24 04 00 20 d4 	movl   $0xdd42000,0x4(%esp)
-80100b5a:	0d 
+80100b4b:	c7 44 24 08 00 00 00 	movl   $0x7f000000,0x8(%esp)
+80100b52:	7f 
+80100b53:	c7 44 24 04 00 f0 ff 	movl   $0x7efff000,0x4(%esp)
+80100b5a:	7e 
 80100b5b:	89 04 24             	mov    %eax,(%esp)
 80100b5e:	e8 cd 5c 00 00       	call   80106830 <allocuvm>
 80100b63:	85 c0                	test   %eax,%eax
@@ -1406,8 +1406,8 @@ exec(char *path, char **argv)
 	curproc->tf->eip = elf.entry;  // main
 80100cce:	8b 47 18             	mov    0x18(%edi),%eax
 	curproc->stack_top = stack_top;
-80100cd1:	c7 87 80 00 00 00 00 	movl   $0xdd42000,0x80(%edi)
-80100cd8:	20 d4 0d 
+80100cd1:	c7 87 80 00 00 00 00 	movl   $0x7efff000,0x80(%edi)
+80100cd8:	f0 ff 7e 
   curproc->pgdir = pgdir;
 80100cdb:	89 4f 04             	mov    %ecx,0x4(%edi)
   curproc->sz = sz;
@@ -8603,7 +8603,7 @@ fetchint(uint addr, int *ip)
   //struct proc *curproc = myproc();
 
   if(addr >= USERTOP || addr+4 > USERTOP)
-801044e6:	3d fc 2f d4 0d       	cmp    $0xdd42ffc,%eax
+801044e6:	3d fc ff ff 7e       	cmp    $0x7efffffc,%eax
 801044eb:	77 0b                	ja     801044f8 <fetchint+0x18>
     return -1;
   *ip = *(int*)(addr);
@@ -8636,7 +8636,7 @@ fetchstr(uint addr, char **pp)
   //struct proc *curproc = myproc();
 
   if(addr >= USERTOP)
-80104506:	81 fa ff 2f d4 0d    	cmp    $0xdd42fff,%edx
+80104506:	81 fa ff ff ff 7e    	cmp    $0x7effffff,%edx
 8010450c:	77 21                	ja     8010452f <fetchstr+0x2f>
     return -1;
   *pp = (char*)addr;
@@ -8654,7 +8654,7 @@ fetchstr(uint addr, char **pp)
 80104523:	74 13                	je     80104538 <fetchstr+0x38>
   for(s = *pp; s < ep; s++){
 80104525:	83 c0 01             	add    $0x1,%eax
-80104528:	3d 00 30 d4 0d       	cmp    $0xdd43000,%eax
+80104528:	3d 00 00 00 7f       	cmp    $0x7f000000,%eax
 8010452d:	75 f1                	jne    80104520 <fetchstr+0x20>
     return -1;
 8010452f:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
@@ -8688,7 +8688,7 @@ argint(int n, int *ip)
 80104551:	8b 40 44             	mov    0x44(%eax),%eax
 80104554:	8d 44 90 04          	lea    0x4(%eax,%edx,4),%eax
   if(addr >= USERTOP || addr+4 > USERTOP)
-80104558:	3d fc 2f d4 0d       	cmp    $0xdd42ffc,%eax
+80104558:	3d fc ff ff 7e       	cmp    $0x7efffffc,%eax
 8010455d:	77 11                	ja     80104570 <argint+0x30>
   *ip = *(int*)(addr);
 8010455f:	8b 10                	mov    (%eax),%edx
@@ -8781,7 +8781,7 @@ argstr(int n, char **pp)
   return fetchstr(addr, pp);
 801045ec:	8b 55 f4             	mov    -0xc(%ebp),%edx
   if(addr >= USERTOP)
-801045ef:	81 fa ff 2f d4 0d    	cmp    $0xdd42fff,%edx
+801045ef:	81 fa ff ff ff 7e    	cmp    $0x7effffff,%edx
 801045f5:	77 20                	ja     80104617 <argstr+0x47>
   *pp = (char*)addr;
 801045f7:	8b 4d 0c             	mov    0xc(%ebp),%ecx
@@ -8796,7 +8796,7 @@ argstr(int n, char **pp)
 8010460b:	74 13                	je     80104620 <argstr+0x50>
   for(s = *pp; s < ep; s++){
 8010460d:	83 c0 01             	add    $0x1,%eax
-80104610:	3d ff 2f d4 0d       	cmp    $0xdd42fff,%eax
+80104610:	3d ff ff ff 7e       	cmp    $0x7effffff,%eax
 80104615:	76 f1                	jbe    80104608 <argstr+0x38>
     return -1;
 80104617:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
@@ -14664,7 +14664,7 @@ bad:
 		if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
 80106b80:	8b 45 08             	mov    0x8(%ebp),%eax
 80106b83:	31 c9                	xor    %ecx,%ecx
-80106b85:	ba 00 20 d4 0d       	mov    $0xdd42000,%edx
+80106b85:	ba 00 f0 ff 7e       	mov    $0x7efff000,%edx
 80106b8a:	e8 b1 f7 ff ff       	call   80106340 <walkpgdir>
 80106b8f:	85 c0                	test   %eax,%eax
 80106b91:	0f 84 89 00 00 00    	je     80106c20 <copyuvm+0x170>
@@ -14700,8 +14700,8 @@ bad:
 80106bde:	89 7c 24 0c          	mov    %edi,0xc(%esp)
 80106be2:	c7 44 24 08 00 10 00 	movl   $0x1000,0x8(%esp)
 80106be9:	00 
-80106bea:	c7 44 24 04 00 20 d4 	movl   $0xdd42000,0x4(%esp)
-80106bf1:	0d 
+80106bea:	c7 44 24 04 00 f0 ff 	movl   $0x7efff000,0x4(%esp)
+80106bf1:	7e 
 80106bf2:	89 04 24             	mov    %eax,(%esp)
 80106bf5:	e8 36 f9 ff ff       	call   80106530 <mappages>
 80106bfa:	85 c0                	test   %eax,%eax
