@@ -77,6 +77,17 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
+	case T_PGFLT: ; 
+		// Allocate a new page to the stack
+		uint new_top = myproc()->stack_top - PGSIZE;
+		allocuvm(myproc()->pgdir, PGROUNDDOWN(new_top), myproc()->stack_top);
+
+		// Keep track that another page has been added
+		myproc()->stack_sz++;
+		myproc()->stack_top = new_top;
+
+		lapiceoi();
+	break;	
 
   //PAGEBREAK: 13
   default:
