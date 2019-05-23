@@ -50,7 +50,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 	uint stack_sz; 					 		 // Size of stack in pages
-	uint stack_top;
+	uint stack_top;							 // Pointer to the most recent page
 };
 
 // Process memory is laid out contiguously, low addresses first:
